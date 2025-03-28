@@ -3,10 +3,13 @@ import sqlite3
 import datetime
 import google.generativeai as genai
 import os
+import wikipedia
 
 app = Flask(__name__)
 flag = 1
-api = "AIzaSyB_CM06ZBjzAYgX_P6Hw3ezHRAXKdTVCYY"
+
+api = os.getenv("makersuite")
+#api = "AIzaSyB_CM06ZBjzAYgX_P6Hw3ezHRAXKdTVCYY"
 model = genai.GenerativeModel("gemini-1.5-flash")
 genai.configure(api_key=api)
 
@@ -34,6 +37,14 @@ def main():
 def foodexp():
     return (render_template("foodexp.html"))
 
+@app.route("/foodexp1",methods = ["POST","GET"])
+def foodexp1():
+    return (render_template("foodexp1.html"))
+
+@app.route("/foodexp2",methods = ["POST","GET"])
+def foodexp2():
+    return (render_template("foodexp2.html"))
+
 @app.route("/foodexp_pred",methods = ["POST","GET"])
 def foodexp_pred():
     q = float(request.form.get("q")) #float 很重要
@@ -60,6 +71,13 @@ def faq1():
     r = model.generate_content("query: Factors for Profit")
 
     return (render_template("faq1.html",r=r.candidates[0].content.parts[0]))
+
+
+@app.route("/FAQ_input",methods = ["POST","GET"])
+def FAQ_input():
+    q = request.form.get("q") #这里的q如果内容有空格就会internal error
+    r = wikipedia.summary(q)
+    return (render_template("faq_input.html",r=r))
 
 
 @app.route("/userlog",methods = ["POST","GET"])
